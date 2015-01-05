@@ -1,5 +1,44 @@
 (function () {
 'use strict';
+angular.module('MyPlace', ['ui.router', 'ngAnimate', 'MyPlace.Crud', 'MyPlace.Translate', 'MyPlace.Menu', 'MyPlace.Module', 'ClientData', 'ClientConversions', 'Notes', 'Meetspace']);
+
+function mainCtrl ($scope, $timeout, menuManager) {
+	$scope.menuVisible = false;
+	$scope.menuHidden = true;
+	menuManager.addEventListener('menuUpdated', function () {
+		var menu = menuManager.getActualMenu();
+		$scope.menuVisible = menu.visible;
+		$scope.menuHidden = !menu.visible;
+	});
+}
+
+mainCtrl.$inject = ['$scope', '$timeout', 'MyPlace.Menu.menuManager'];
+
+angular.module('MyPlace')
+.controller('MyPlace.mainCtrl', mainCtrl)
+;
+})();
+(function () {
+'use strict';
+angular.module('MyPlace.Utils', [])
+.factory('capitalizeFirst', function () {
+	return function capitalizeFirst (str) {
+		return str.slice(0, 1).toUpperCase()+str.substr(1);
+	};
+})
+.factory('promisifyReturn',['$q', function ($q) {
+	return function promisifyReturn (fn) {
+		return function wrapper () {
+			var deferred = $q.defer();
+			deferred.resolve(fn.call(null, arguments));
+			return deferred.promise;
+		};
+	};
+}])
+;
+})();
+(function () {
+'use strict';
 function apiService ($resource, Config) {
 	var backendPrefix = Config.backendPrefix
 	  , frontendPrefix = Config.frontendPrefix
@@ -135,7 +174,7 @@ function controllerFactory (capitalizeFirst) {
 	return Controller;
 }
 controllerFactory.$inject = ['capitalizeFirst'];
-angular.module('MyPlace.Crud')
+angular.module('MyPlace.Crud', ['MyPlace.Utils'])
 .factory('MyPlace.Crud.Controller', controllerFactory)
 ;
 })();
@@ -251,28 +290,8 @@ function repositoryFactory ($q, $http, EventListener, capitalizeFirst) {
 	return Repository;
 }
 repositoryFactory.$inject = ['$q', '$http', 'MyPlace.Utils.EventListener', 'capitalizeFirst'];
-angular.module('MyPlace.Crud', ['MyPlace.Utils'])
+angular.module('MyPlace.Crud')
 .factory('MyPlace.Crud.Repository', repositoryFactory)
-;
-})();
-(function () {
-'use strict';
-angular.module('MyPlace', ['ui.router', 'ngAnimate', 'MyPlace.Crud', 'MyPlace.Translate', 'MyPlace.Menu', 'MyPlace.Module', 'ClientData', 'ClientConversions', 'Notes', 'Meetspace']);
-
-function mainCtrl ($scope, $timeout, menuManager) {
-	$scope.menuVisible = false;
-	$scope.menuHidden = true;
-	menuManager.addEventListener('menuUpdated', function () {
-		var menu = menuManager.getActualMenu();
-		$scope.menuVisible = menu.visible;
-		$scope.menuHidden = !menu.visible;
-	});
-}
-
-mainCtrl.$inject = ['$scope', '$timeout', 'MyPlace.Menu.menuManager'];
-
-angular.module('MyPlace')
-.controller('MyPlace.mainCtrl', mainCtrl)
 ;
 })();
 (function () {
@@ -766,23 +785,4 @@ angular.module('MyPlace.Utils')
 .factory('MyPlace.Utils.EventListener', function () {
 	return EventListener;
 });
-})();
-(function () {
-'use strict';
-angular.module('MyPlace.Utils', [])
-.factory('capitalizeFirst', function () {
-	return function capitalizeFirst (str) {
-		return str.slice(0, 1).toUpperCase()+str.substr(1);
-	};
-})
-.factory('promisifyReturn',['$q', function ($q) {
-	return function promisifyReturn (fn) {
-		return function wrapper () {
-			var deferred = $q.defer();
-			deferred.resolve(fn.call(null, arguments));
-			return deferred.promise;
-		};
-	};
-}])
-;
 })();
