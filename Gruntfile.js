@@ -5,7 +5,7 @@ module.exports = function (grunt) {
                 sourceMap: true
             },
             dist: {
-                src: ['app/**/*.js', 'app/*.js'],
+                src: ['app/main.js', 'app/utils/utils.js', 'app/**/*.js', 'app/*.js'],
                 dest: 'dist/my-place.js'
             }
         }

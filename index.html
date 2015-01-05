@@ -3,55 +3,39 @@
 <head>
 	<meta name="charset" value="UTF-8" />
 	<title>My Place</title>
-	<script src="frontend/bower_components/jQuery/dist/jquery.js"></script>
-	<script src="frontend/bower_components/angular/angular.js"></script>
-	<script src="frontend/bower_components/angular-animate/angular-animate.js"></script>
-	<script src="frontend/bower_components/angular-resource/angular-resource.js"></script>
-	<script src="frontend/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-	<script src="frontend/bower_components/angular-translate/angular-translate.js"></script>
-	<script src="frontend/app/main.js"></script>
-	<script src="frontend/app/config.js"></script>
-	<script src="frontend/app/api.js"></script>
-	<script src="frontend/app/routing.js"></script>
-	<script src="frontend/app/crud/Repository.js"></script>
-	<script src="frontend/app/crud/Controller.js"></script>
-	<script src="frontend/app/utils/utils.js"></script>
-	<script src="frontend/app/utils/EventListener.js"></script>
-	<script src="frontend/app/translate/translate.js"></script>
-	<script src="frontend/app/translate/translationConfig.js"></script>
-	<script src="frontend/app/translate/translationLoaderFactory.js"></script>
-	<script src="frontend/app/translate/translationService.js"></script>
-	<script src="frontend/app/menu/menu.js"></script>
-	<script src="frontend/app/menu/menuManager.js"></script>
-	<script src="frontend/app/module/module.js"></script>
-	<script src="frontend/app/module/moduleManager.js"></script>
-	<script src="frontend/app/module/moduleList.js"></script>
-	<script src="frontend/modules/client_data/src/clientData.js"></script>
-	<script src="frontend/modules/client_data/src/clientsCtrl.js"></script>
-	<script src="frontend/modules/client_data/src/Client.js"></script>
-	<script src="frontend/modules/client_data/src/clientsRepository.js"></script>
-	<script src="frontend/modules/client_data/src/Product.js"></script>
-	<script src="frontend/modules/client_data/src/productsCtrl.js"></script>
-	<script src="frontend/modules/client_data/src/productsRepository.js"></script>
-	<script src="frontend/modules/client_data/src/Vendor.js"></script>
-	<script src="frontend/modules/client_data/src/vendorsRepository.js"></script>
-	<script src="frontend/modules/client_conversions/src/clientConversions.js"></script>
-	<script src="frontend/modules/client_conversions/src/Conversion.js"></script>
-	<script src="frontend/modules/client_conversions/src/mainCtrl.js"></script>
-	<script src="frontend/modules/notes/src/notes.js"></script>
-	<script src="frontend/modules/notes/src/Note.js"></script>
-	<script src="frontend/modules/notes/src/notesRepository.js"></script>
-	<script src="frontend/modules/notes/src/mainCtrl.js"></script>
-	<script src="frontend/modules/notes/src/noteView.js"></script>
-	<script src="frontend/modules/notes/src/notesWrapper.js"></script>
-	<script src="frontend/modules/meetspace/src/meetspace.js"></script>
-	<script src="frontend/modules/meetspace/src/mainCtrl.js"></script>
-	<script src="frontend/modules/meetspace/src/Event.js"></script>
-	<script src="frontend/modules/meetspace/src/eventsRepository.js"></script>
-	<script src="frontend/modules/meetspace/src/eventView.js"></script>
-	<link rel="stylesheet" href="frontend/style/style.css" />
-	<link rel="stylesheet" href="frontend/modules/notes/style/style.css" />
-	<link rel="stylesheet" href="frontend/modules/meetspace/style/style.css" />
+	<script src="bower_components/jQuery/dist/jquery.js"></script>
+	<script src="bower_components/angular/angular.js"></script>
+	<script src="bower_components/angular-animate/angular-animate.js"></script>
+	<script src="bower_components/angular-resource/angular-resource.js"></script>
+	<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+	<script src="bower_components/angular-translate/angular-translate.js"></script>
+	<script src="dist/my-place.js"></script>
+	<script src="modules/client_data/src/clientData.js"></script>
+	<script src="modules/client_data/src/clientsCtrl.js"></script>
+	<script src="modules/client_data/src/Client.js"></script>
+	<script src="modules/client_data/src/clientsRepository.js"></script>
+	<script src="modules/client_data/src/Product.js"></script>
+	<script src="modules/client_data/src/productsCtrl.js"></script>
+	<script src="modules/client_data/src/productsRepository.js"></script>
+	<script src="modules/client_data/src/Vendor.js"></script>
+	<script src="modules/client_data/src/vendorsRepository.js"></script>
+	<script src="modules/client_conversions/src/clientConversions.js"></script>
+	<script src="modules/client_conversions/src/Conversion.js"></script>
+	<script src="modules/client_conversions/src/mainCtrl.js"></script>
+	<script src="modules/notes/src/notes.js"></script>
+	<script src="modules/notes/src/Note.js"></script>
+	<script src="modules/notes/src/notesRepository.js"></script>
+	<script src="modules/notes/src/mainCtrl.js"></script>
+	<script src="modules/notes/src/noteView.js"></script>
+	<script src="modules/notes/src/notesWrapper.js"></script>
+	<script src="modules/meetspace/src/meetspace.js"></script>
+	<script src="modules/meetspace/src/mainCtrl.js"></script>
+	<script src="modules/meetspace/src/Event.js"></script>
+	<script src="modules/meetspace/src/eventsRepository.js"></script>
+	<script src="modules/meetspace/src/eventView.js"></script>
+	<link rel="stylesheet" href="style/style.css" />
+	<link rel="stylesheet" href="modules/notes/style/style.css" />
+	<link rel="stylesheet" href="modules/meetspace/style/style.css" />
 </head>
 <body ng-controller="MyPlace.mainCtrl">
 	<my-place-module-list ng-controller="MyPlace.Module.moduleListCtrl"></my-place-module-list>

@@ -78,7 +78,7 @@ function controllerFactory (capitalizeFirst) {
 	return Controller;
 }
 controllerFactory.$inject = ['capitalizeFirst'];
-angular.module('MyPlace.Crud')
+angular.module('MyPlace.Crud', ['MyPlace.Utils'])
 .factory('MyPlace.Crud.Controller', controllerFactory)
 ;
 })();
