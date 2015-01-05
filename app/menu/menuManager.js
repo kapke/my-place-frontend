@@ -1,3 +1,5 @@
+(function () {
+'use strict';
 function menuManager (EventListener, api, moduleManager) {
 	EventListener.call(this);
 
@@ -100,3 +102,4 @@ menuManager.$inject = ['MyPlace.Utils.EventListener', 'MyPlace.apiService', 'MyP
 angular.module('MyPlace.Menu')
 .service('MyPlace.Menu.menuManager', menuManager)
 ;
+})();

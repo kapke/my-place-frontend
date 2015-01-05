@@ -1,3 +1,4 @@
+(function () {
 'use strict';
 angular.module('MyPlace.Utils', [])
 .factory('capitalizeFirst', function () {
@@ -15,3 +16,4 @@ angular.module('MyPlace.Utils', [])
 	};
 }])
 ;
+})();

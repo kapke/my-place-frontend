@@ -1,3 +1,4 @@
+(function () {
 'use strict';
 function EventListener () {
 	var events = {};
@@ -37,3 +38,4 @@ angular.module('MyPlace.Utils')
 .factory('MyPlace.Utils.EventListener', function () {
 	return EventListener;
 });
+})();

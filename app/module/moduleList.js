@@ -1,3 +1,4 @@
+(function () {
 'use strict';
 function moduleList (moduleManager) {
 	return {
@@ -39,3 +40,4 @@ function moduleListCtrl () {
 angular.module('MyPlace.Module')
 .controller('MyPlace.Module.moduleListCtrl', moduleListCtrl)
 .directive('myPlaceModuleList', moduleList);
+})();

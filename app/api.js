@@ -1,3 +1,4 @@
+(function () {
 'use strict';
 function apiService ($resource, Config) {
 	var backendPrefix = Config.backendPrefix
@@ -41,4 +42,5 @@ apiService.$inject = ['$resource', 'MyPlace.configService'];
 
 angular.module('MyPlace.Api', ['ngResource'])
 .service('MyPlace.apiService', apiService)
-;
+;  
+})();

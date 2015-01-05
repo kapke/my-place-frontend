@@ -1,3 +1,4 @@
+(function () {
 'use strict';
 function menuCtrl () {
 }
@@ -25,3 +26,4 @@ angular.module('MyPlace.Menu', [])
 .controller('MyPlace.Menu.menuCtrl', menuCtrl)
 .directive('myPlaceMenu', menuDirective)
 ;
+})();

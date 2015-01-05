@@ -1,3 +1,4 @@
+(function () {
 'use strict';
 function moduleManager ($state, api, EventListener) {
 	EventListener.call(this);
@@ -99,3 +100,4 @@ moduleManager.$inject = ['$state', 'MyPlace.apiService', 'MyPlace.Utils.EventLis
 angular.module('MyPlace.Module')
 .service('MyPlace.Module.moduleManager', moduleManager)
 ;
+})();

@@ -1,3 +1,4 @@
+(function () {
 'use strict';
 function moduleCtrl ($scope, $rootScope, $state, $resource, Config, moduleManager) {
 	var activeModule = ''
@@ -24,3 +25,4 @@ moduleCtrl.$inject = ['$scope', '$rootScope', '$state', '$resource', 'MyPlace.co
 angular.module('MyPlace.Module', ['MyPlace.Utils', 'MyPlace.Api'])
 .controller('MyPlace.Module.moduleCtrl', moduleCtrl)
 ;
+})();

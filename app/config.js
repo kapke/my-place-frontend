@@ -1,3 +1,4 @@
+(function () {
 'use strict';
 angular.module('MyPlace')
 .service('MyPlace.configService', [function () {
@@ -5,3 +6,4 @@ angular.module('MyPlace')
 	this.frontendPrefix = 'frontend/';
 }])
 ;
+})();

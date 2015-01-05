@@ -1,3 +1,4 @@
+(function () {
 'use strict';
 angular.module('MyPlace')
 .config(function ($stateProvider) {
@@ -9,3 +10,4 @@ angular.module('MyPlace')
 	;
 })
 ;
+})();
