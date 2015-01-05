@@ -1,0 +1,12 @@
+{
+	"items": [
+		{
+			"title": "ClientData.clients",
+			"view": "clients"
+		},
+		{
+			"title": "ClientData.products",
+			"view": "products"
+		}
+	]
+}

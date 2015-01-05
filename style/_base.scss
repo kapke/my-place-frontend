@@ -1,0 +1,84 @@
+$baseFontSize: 12pt;
+$baseLineHeight: 15pt;
+$moduleListWidth: 16*$baseLineHeight;
+$menuWidth: 15*$baseLineHeight;
+$primaryColor: #006ab0;
+$secondaryColor: #fff;
+$ternaryColor: #00458f;
+
+@mixin independentShadow {
+	&:after {
+		display: block;
+		position: fixed;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		width: 1em;
+		box-shadow: 2px 0 0.25*$baseLineHeight 0 rgba(0, 0, 0, 0.5);
+		color: transparent;
+		content: ' ';
+		transition: all 0.2s ease-out 0;
+	}
+	&:before {
+		z-index: 1;
+		display: block;
+		position: fixed;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		width: 1em;
+		color: transparent;
+		background-color: $secondaryColor;
+		content: ' ';
+		transition: all 0.2s ease-out 0;
+	}
+}
+
+@mixin card($active: true) {
+	@include material;
+	margin: 0.5*$baseLineHeight;
+	padding: 0.5*$baseLineHeight;
+	display: inline-block;
+	transition: all 0.2s ease-out;
+	font-weight: 100;
+	@if $active {
+		&:hover, &.active {
+			transform: translate(0, -2px);
+			box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5);
+		}
+	}
+}
+
+@mixin no-card {
+	@include no-material;
+}
+
+@mixin button {
+	@include material;
+	border-color: $primaryColor;
+	transition: all 0.2s ease-out;
+	padding: 0.25*$baseLineHeight 0.5*$baseLineHeight;
+	&:hover, &.active {
+		transform: translate(0, -2px);
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5);
+	}
+}
+
+@mixin centered {
+	margin: 0 auto;
+}
+
+@mixin column($width: 30em) {
+	@include centered;
+	width: $width;
+}
+
+@mixin material {
+	box-shadow: 0em 1px 3px 0 rgba(0, 0, 0, 0.25);
+	border-radius: 2px;
+}
+
+@mixin no-material {
+	box-shadow: none;
+	border-radius: 0;
+}

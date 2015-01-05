@@ -1,0 +1,16 @@
+{
+	"ClientData": "Dorada finansowy"
+  , "clients": "Klienci"
+  , "addClient": "Dodaj klienta"
+  , "editClient": "Edytuj dane"
+  , "approveChanges": "Zatwierdź zmiany"
+  , "cancel": "Anuluj"
+  , "name": "Imię"
+  , "surname": "Nazwisko"
+  , "products": "Produkty"
+  , "addProduct": "Dodaj produkt"
+  , "vendor": "Dostawca"
+  , "productName": "Nazwa produktu"
+  , "addVendor": "Dodaj dostawcę"
+  , "vendorName": "Nazwa dostawcy"
+}

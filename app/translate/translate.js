@@ -1,0 +1,1 @@
+angular.module('MyPlace.Translate', ['pascalprecht.translate']);

@@ -1,0 +1,87 @@
+@import '../../../style/base';
+
+notes-wrapper {
+	display: inline-block;
+	vertical-align: top;
+	width: 12*$baseLineHeight;
+	margin: 0.5*$baseLineHeight;
+	padding: 0.5*$baseLineHeight;
+	.column {
+		width: 14*$baseLineHeight;
+		display: inline-block;
+		vertical-align: top;
+	}
+}
+
+note-view, .note {
+	width: 12*$baseLineHeight;
+	min-height: 3*$baseLineHeight;
+	@include card;
+	label {
+		padding: 0;
+		span {
+			display: none;
+		}
+	}
+	input, textarea {
+		width: 11*$baseLineHeight;
+		border: none;
+		&[name="title"] {
+			font-weight: bold;
+		}
+		&[type="submit"] {
+			width: 7*$baseLineHeight;
+			box-shadow: 0px 1px 5px 0 rgba(0, 0, 0, 0.5);
+		}
+	}
+	textarea {
+		height: 4*$baseLineHeight;
+		resize: none;
+	}
+	.title {
+		font-weight: normal;
+		margin-bottom: 0.5em;
+	}
+	.content {
+		font-weight: 100;
+	}
+}
+
+note-view {
+	position: relative;
+	overflow: hidden;
+	padding-bottom: $baseLineHeight;
+	//max-height: 7*$baseLineHeight;
+	.action-bar {
+		transition: all 0.2s ease-in;
+		height: 0;
+		overflow: hidden;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		text-align: right;
+		background-color: rgba(255, 255, 255, 0.7);
+		button {
+			background-color: transparent;
+			border: none;
+			font-size: 1rem;
+			color: $primaryColor;
+			margin: 0.5em;
+			padding: 0.5em;
+			cursor: pointer;
+			transition: all 0.2s linear;
+			outline-width: 0;
+			&:active {
+				color: $ternaryColor;
+			}
+		}
+	}
+	&:hover, &.active {
+		.action-bar {
+			bottom: 0em;
+			height: 2em;
+			padding-bottom: 0.75em;
+		}
+	}
+}

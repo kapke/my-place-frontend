@@ -1,0 +1,91 @@
+.meetspace.module-section {
+  box-shadow: none;
+  border-radius: 0; }
+
+.meetspace-filter label {
+  box-shadow: 0em 1px 3px 0 rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  margin: 7.5pt;
+  padding: 7.5pt;
+  display: inline-block;
+  transition: all 0.2s ease-out;
+  font-weight: 100; }
+
+event-view {
+  box-shadow: 0em 1px 3px 0 rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  margin: 7.5pt;
+  padding: 7.5pt;
+  display: inline-block;
+  transition: all 0.2s ease-out;
+  font-weight: 100; }
+  event-view .date {
+    display: block;
+    font-style: italic; }
+  event-view .more {
+    display: block;
+    text-align: right;
+    cursor: pointer;
+    text-decoration: underline; }
+  event-view .details {
+    display: none;
+    background: white;
+    box-shadow: 0em 1px 3px 0 rgba(0, 0, 0, 0.25);
+    position: absolute;
+    left: 240pt;
+    top: 2em;
+    right: 255pt;
+    bottom: 2em;
+    padding: 1em;
+    z-index: 1; }
+    event-view .details .less {
+      box-shadow: 0em 1px 3px 0 rgba(0, 0, 0, 0.25);
+      border-radius: 2px;
+      border-color: #006ab0;
+      transition: all 0.2s ease-out;
+      padding: 3.75pt 7.5pt;
+      position: absolute;
+      top: 1em;
+      right: 1em;
+      cursor: pointer; }
+      event-view .details .less:hover, event-view .details .less.active {
+        transform: translate(0, -2px);
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5); }
+  event-view.full h3 {
+    font-weight: bold; }
+  event-view.full .details {
+    display: block;
+    font-weight: normal; }
+    event-view.full .details:before {
+      content: ' ';
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      background-color: white;
+      opacity: 0.5;
+      z-index: -1; }
+    event-view.full .details header {
+      box-shadow: 0em 1px 3px 0 rgba(0, 0, 0, 0.25);
+      border-radius: 2px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      height: 6em;
+      padding: 1em;
+      background-color: white; }
+      event-view.full .details header * {
+        background-colo: white; }
+    event-view.full .details .agenda {
+      margin: 0 auto;
+      width: 30em;
+      background-color: white;
+      overflow: auto;
+      padding: 1em;
+      position: absolute;
+      top: 8em;
+      left: 0;
+      right: 0;
+      bottom: 0; }

@@ -1,0 +1,75 @@
+notes-wrapper {
+  display: inline-block;
+  vertical-align: top;
+  width: 180pt;
+  margin: 7.5pt;
+  padding: 7.5pt; }
+  notes-wrapper .column {
+    width: 210pt;
+    display: inline-block;
+    vertical-align: top; }
+
+note-view, .note {
+  width: 180pt;
+  min-height: 45pt;
+  box-shadow: 0em 1px 3px 0 rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  margin: 7.5pt;
+  padding: 7.5pt;
+  display: inline-block;
+  transition: all 0.2s ease-out;
+  font-weight: 100; }
+  note-view:hover, note-view.active, .note:hover, .note.active {
+    transform: translate(0, -2px);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5); }
+  note-view label, .note label {
+    padding: 0; }
+    note-view label span, .note label span {
+      display: none; }
+  note-view input, note-view textarea, .note input, .note textarea {
+    width: 165pt;
+    border: none; }
+    note-view input[name="title"], note-view textarea[name="title"], .note input[name="title"], .note textarea[name="title"] {
+      font-weight: bold; }
+    note-view input[type="submit"], note-view textarea[type="submit"], .note input[type="submit"], .note textarea[type="submit"] {
+      width: 105pt;
+      box-shadow: 0px 1px 5px 0 rgba(0, 0, 0, 0.5); }
+  note-view textarea, .note textarea {
+    height: 60pt;
+    resize: none; }
+  note-view .title, .note .title {
+    font-weight: normal;
+    margin-bottom: 0.5em; }
+  note-view .content, .note .content {
+    font-weight: 100; }
+
+note-view {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 15pt; }
+  note-view .action-bar {
+    transition: all 0.2s ease-in;
+    height: 0;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: right;
+    background-color: rgba(255, 255, 255, 0.7); }
+    note-view .action-bar button {
+      background-color: transparent;
+      border: none;
+      font-size: 1rem;
+      color: #006ab0;
+      margin: 0.5em;
+      padding: 0.5em;
+      cursor: pointer;
+      transition: all 0.2s linear;
+      outline-width: 0; }
+      note-view .action-bar button:active {
+        color: #00458f; }
+  note-view:hover .action-bar, note-view.active .action-bar {
+    bottom: 0em;
+    height: 2em;
+    padding-bottom: 0.75em; }

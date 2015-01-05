@@ -1,0 +1,88 @@
+@import '../../../style/base';
+
+.meetspace.module-section {
+	@include no-card;
+}
+
+.meetspace-filter {
+	label {
+		@include card($active: false);
+	}
+}
+
+event-view {
+	@include card($active: false);
+	.date {
+		display: block;
+		font-style: italic;
+	}
+	.more {
+		display: block;
+		text-align: right;
+		cursor: pointer;
+		text-decoration: underline;
+	}
+	.details {
+		display: none;
+		background: $secondaryColor;
+		box-shadow: 0em 1px 3px 0 rgba(0, 0, 0, 0.25);
+		position: absolute;
+		left: $moduleListWidth;
+		top: 2em;
+		right: $baseLineHeight + $moduleListWidth;
+		bottom: 2em;
+		padding: 1em;
+		z-index: 1;
+		.less {
+			@include button;
+			position: absolute;
+			top: 1em;
+			right: 1em;
+			cursor: pointer;
+		}
+	}
+	&.full {
+		h3 {
+			font-weight: bold;
+		}
+		.details {
+			display: block;
+			font-weight: normal;
+			&:before {
+				content: ' ';
+				position: fixed;
+				left: 0;
+				top: 0;
+				bottom: 0;
+				right: 0;
+				background-color: $secondaryColor;
+				opacity: 0.5;
+				z-index: -1;
+			}
+			header {
+				@include material;
+				position: absolute;
+				left: 0;
+				top: 0;
+				right: 0;
+				height: 6em;
+				padding: 1em;
+				background-color: $secondaryColor;
+				* {
+					background-colo: $secondaryColor;
+				}
+			}
+			.agenda {
+				@include column;
+				background-color: $secondaryColor;
+				overflow: auto;
+				padding: 1em;
+				position: absolute;
+				top: 8em;
+				left: 0;
+				right: 0;
+				bottom: 0;
+			}
+		}
+	}
+}
