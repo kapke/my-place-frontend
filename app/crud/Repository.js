@@ -110,7 +110,7 @@ function repositoryFactory ($q, $http, EventListener, capitalizeFirst) {
 	return Repository;
 }
 repositoryFactory.$inject = ['$q', '$http', 'MyPlace.Utils.EventListener', 'capitalizeFirst'];
-angular.module('MyPlace.Crud', ['MyPlace.Utils'])
+angular.module('MyPlace.Crud')
 .factory('MyPlace.Crud.Repository', repositoryFactory)
 ;
 })();
