@@ -452,7 +452,7 @@ function moduleCtrl ($scope, $rootScope, $state, $resource, Config, moduleManage
 	});
 
 	function setActualTemplate () {
-		$scope.actualTemplate = 'frontend/modules/'+activeModule+'/template/'+activeView+'.tpl';
+		$scope.actualTemplate = Config.frontendPrefix+'/modules/'+activeModule+'/template/'+activeView+'.tpl';
 	}
 }
 
@@ -624,12 +624,12 @@ angular.module('MyPlace')
 angular.module('MyPlace.Translate', ['pascalprecht.translate']);
 (function () {
 'use strict';
-function translationServiceConfig (translationServiceProvider) {
+function translationServiceConfig (config, translationServiceProvider) {
 	translationServiceProvider.registerModule({name: 'MyPlace', slug: 'MyPlace'}, function (lang) {
-		return 'frontend/translations/'+lang+'.json';
+		return config.frontendPrefix+'/translations/'+lang+'.json';
 	});
 }
-translationServiceConfig.$inject = ['MyPlace.Translate.translationServiceProvider'];
+translationServiceConfig.$inject = ['MyPlace.configService', 'MyPlace.Translate.translationServiceProvider'];
 
 function translateConfig ($translateProvider) {
 	$translateProvider.useLoader('MyPlace.Translate.translationLoader');
@@ -792,3 +792,4 @@ angular.module('MyPlace.Utils')
 	return EventListener;
 });
 })();
+//# sourceMappingURL=my-place.js.map
