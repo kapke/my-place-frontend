@@ -794,4 +794,3 @@ angular.module('MyPlace.Module')
 .service('MyPlace.Module.moduleManager', moduleManager)
 ;
 })();
-//# sourceMappingURL=my-place.js.map
