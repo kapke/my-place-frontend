@@ -1,6 +1,6 @@
 (function () {
 'use strict';
-angular.module('MyPlace', ['ui.router', 'ngAnimate', 'MyPlace.Crud', 'MyPlace.Translate', 'MyPlace.Menu', 'MyPlace.Module']);
+angular.module('MyPlace', ['ui.router', 'ngAnimate', 'MyPlace.Config', 'MyPlace.Crud', 'MyPlace.Translate', 'MyPlace.Menu', 'MyPlace.Module']);
 
 function mainCtrl ($scope, $timeout, menuManager) {
 	$scope.menuVisible = false;
@@ -16,25 +16,6 @@ mainCtrl.$inject = ['$scope', '$timeout', 'MyPlace.Menu.menuManager'];
 
 angular.module('MyPlace')
 .controller('MyPlace.mainCtrl', mainCtrl)
-;
-})();
-(function () {
-'use strict';
-angular.module('MyPlace.Utils', [])
-.factory('capitalizeFirst', function () {
-	return function capitalizeFirst (str) {
-		return str.slice(0, 1).toUpperCase()+str.substr(1);
-	};
-})
-.factory('promisifyReturn',['$q', function ($q) {
-	return function promisifyReturn (fn) {
-		return function wrapper () {
-			var deferred = $q.defer();
-			deferred.resolve(fn.call(null, arguments));
-			return deferred.promise;
-		};
-	};
-}])
 ;
 })();
 (function () {
@@ -86,7 +67,7 @@ angular.module('MyPlace.Api', ['ngResource'])
 
 (function () {
 'use strict';
-angular.module('MyPlace')
+angular.module('MyPlace.Config', [])
 .provider('MyPlace.configService', [function () {
     var that = this;
     
@@ -100,6 +81,80 @@ angular.module('MyPlace')
 ;
 })();
 
+(function () {
+'use strict';
+function routingConfig ($stateProvider, Config) {
+    $stateProvider
+        .state('module', {
+            url: '/:module/:view',
+            templateUrl: Config.frontendPrefix+'template/module/moduleView.tpl'
+        });
+}
+routingConfig.$inject = ['$stateProvider', 'MyPlace.configServiceProvider'];
+    
+angular.module('MyPlace').config(routingConfig);
+})();
+angular.module('MyPlace.Translate', ['pascalprecht.translate', 'MyPlace.Config']);
+(function () {
+'use strict';
+angular.module('MyPlace.Utils', [])
+.factory('capitalizeFirst', function () {
+	return function capitalizeFirst (str) {
+		return str.slice(0, 1).toUpperCase()+str.substr(1);
+	};
+})
+.factory('promisifyReturn',['$q', function ($q) {
+	return function promisifyReturn (fn) {
+		return function wrapper () {
+			var deferred = $q.defer();
+			deferred.resolve(fn.call(null, arguments));
+			return deferred.promise;
+		};
+	};
+}])
+;
+})();
+(function () {
+'use strict';
+function EventListener () {
+	var events = {};
+
+	this.removeEventListener = removeEventListener;
+	this.addEventListener = addEventListener;
+	this.launchEvent = launchEvent;
+
+	function removeEventListener (name, listener) {
+		var index = events[name].indexOf(listener);
+		if(index > -1) {
+			return events[name].splice(index, 1);
+		} else {
+			return null;
+		}
+	}
+	function addEventListener (name, listener) {
+		if(!events[name]) {
+			events[name] = [];
+		}
+		var index = events[name].indexOf(listener);
+		if(index == -1) {
+			events[name].push(listener);
+		}
+	}
+	function launchEvent (name, params, that) {
+		that = that || this;
+		if(events[name]) {
+			events[name].forEach(function (listener) {
+				listener.apply(that, params);
+			});	
+		}
+	}
+}
+
+angular.module('MyPlace.Utils')
+.factory('MyPlace.Utils.EventListener', function () {
+	return EventListener;
+});
+})();
 (function () {
 'use strict';
 function controllerFactory (capitalizeFirst) {
@@ -302,12 +357,143 @@ angular.module('MyPlace.Crud')
 })();
 (function () {
 'use strict';
+function translationServiceConfig (config, translationServiceProvider) {
+	translationServiceProvider.registerModule({name: 'MyPlace', slug: 'MyPlace'}, function (lang) {
+		return config.frontendPrefix+'translations/'+lang+'.json';
+	});
+}
+translationServiceConfig.$inject = ['MyPlace.configServiceProvider', 'MyPlace.Translate.translationServiceProvider'];
+
+function translateConfig ($translateProvider) {
+	$translateProvider.useLoader('MyPlace.Translate.translationLoader');
+	$translateProvider.use('pl-PL');
+	$translateProvider.preferredLanguage('pl-PL');
+	$translateProvider.fallbackLanguage('en-GB');
+}
+translateConfig.$inject = ['$translateProvider'];
+
+angular.module('MyPlace.Translate')
+.config(translationServiceConfig)
+.config(translateConfig)
+;
+})();
+(function () {
+'use strict';
+function translationLoaderFactory ($q, $http, translationService) {
+	return function translationLoader (options) {
+		var deferred = $q.defer()
+		  , lang = options.key
+		  , modules = translationService.getModules()
+		  , counter = 0
+		  , translations = {}
+		  ;
+		modules.forEach(function (module) {
+			var moduleDef = translationService.getModule(module.slug)
+			  ;
+			$http
+				.get(moduleDef.resolver(lang, module.slug))
+				.then(addTranslations(module.name))
+				.finally(tryResolve)
+				;
+
+		});
+		return deferred.promise;
+
+		function addTranslations (module) {
+			return function (receivedTranslations) {
+				var newTranslations = receivedTranslations.data;
+				for(var translationKey in newTranslations) {
+					var targetKey = module;
+					if(translationKey != module) {
+						targetKey += '.'+translationKey;
+					}
+					translations[targetKey] = newTranslations[translationKey];
+				}
+			};
+		}
+		
+
+		function tryResolve () {
+			counter++;
+			if(counter == modules.length) {
+				deferred.resolve(translations);
+			}
+		}
+	};
+}
+translationLoaderFactory.$inject = ['$q', '$http', 'MyPlace.Translate.translationService'];
+
+angular.module('MyPlace.Translate')
+.factory('MyPlace.Translate.translationLoader', translationLoaderFactory)
+;
+})();
+(function () {
+'use strict';
+function translationServiceProvider (Config) {
+	var moduleMap = {}
+	  , actualModule = ''
+	  , registeredModules = []
+	  ;
+
+	this.registerModule = registerModule;
+
+	this.$get = function ($injector, moduleManager) {
+		moduleManager.addEventListener('moduleAdded', function (module) {
+			moduleRegister(module);
+			module.children.forEach(function (submodule) {
+				moduleRegister(submodule);
+			});
+		});
+
+		return {
+			registerModule: moduleRegister
+		  , getModules: getModules
+		  , getModule: getModule
+		}
+
+		function moduleRegister (module, resolvingFunction) {
+			var $translate = $injector.get('$translate');
+			registerModule(module, resolvingFunction);
+			$translate.refresh();
+		}
+	}
+	this.$get.$inject = ['$injector', 'MyPlace.Module.moduleManager'];
+
+	function registerModule (module, resolvingFunction) {
+		moduleMap[module.slug] = {
+			resolver: resolvingFunction || standardNameResolver,
+			moduleData: module
+		};
+		registeredModules.push(module);
+	}
+
+	function getModules () {
+		return registeredModules;
+	}
+
+	function getModule (moduleName) {
+		return moduleMap[moduleName];
+	}
+
+	function standardNameResolver (language, module) {
+		return Config.frontendPrefix+'modules/'+module+'/resources/translations/'+language+'.json';
+	}
+}
+    
+    translationServiceProvider.$inject = ['MyPlace.configServiceProvider'];
+
+angular.module('MyPlace.Translate')
+.provider('MyPlace.Translate.translationService', translationServiceProvider)
+;
+})();
+(function () {
+'use strict';
 function menuCtrl () {
 }
 
 menuCtrl.$inject = [];
 
-function menuDirective (menuManager) {
+function menuDirective (Config, menuManager) {
 	return {
 		restrict: 'E',
 		controller: function ($scope) {
@@ -318,11 +504,11 @@ function menuDirective (menuManager) {
 				$scope.menu = menuManager.getActualMenu();
 			});
 		},
-		templateUrl: 'frontend/template/menu/menu.tpl'
+		templateUrl: Config.frontendPrefix+'template/menu/menu.tpl'
 	};
 }
 
-menuDirective.$inject = ['MyPlace.Menu.menuManager'];
+menuDirective.$inject = ['MyPlace.configService', 'MyPlace.Menu.menuManager'];
 
 angular.module('MyPlace.Menu', [])
 .controller('MyPlace.Menu.menuCtrl', menuCtrl)
@@ -464,7 +650,7 @@ angular.module('MyPlace.Module', ['MyPlace.Utils', 'MyPlace.Api'])
 })();
 (function () {
 'use strict';
-function moduleList (moduleManager) {
+function moduleList (Config, moduleManager) {
 	return {
 		restrict: 'E',
 		controller: function ($scope) {
@@ -492,10 +678,10 @@ function moduleList (moduleManager) {
 				$scope.activeModule = activeModules;
 			}
 		},
-		templateUrl: 'frontend/template/module/moduleList.tpl'
+		templateUrl: Config.frontendPrefix+'template/module/moduleList.tpl'
 	};
 }
-moduleList.$inject = ['MyPlace.Module.moduleManager'];
+moduleList.$inject = ['MyPlace.configService', 'MyPlace.Module.moduleManager'];
 
 function moduleListCtrl () {
 }
@@ -607,189 +793,5 @@ moduleManager.$inject = ['$state', 'MyPlace.apiService', 'MyPlace.Utils.EventLis
 angular.module('MyPlace.Module')
 .service('MyPlace.Module.moduleManager', moduleManager)
 ;
-})();
-(function () {
-'use strict';
-angular.module('MyPlace')
-.config(function ($stateProvider) {
-	$stateProvider
-	.state('module', {
-		  url: '/:module/:view'
-		, templateUrl: 'frontend/template/module/moduleView.tpl'
-	})
-	;
-})
-;
-})();
-angular.module('MyPlace.Translate', ['pascalprecht.translate']);
-(function () {
-'use strict';
-function translationServiceConfig (config, translationServiceProvider) {
-	translationServiceProvider.registerModule({name: 'MyPlace', slug: 'MyPlace'}, function (lang) {
-		return config.frontendPrefix+'/translations/'+lang+'.json';
-	});
-}
-translationServiceConfig.$inject = ['MyPlace.configService', 'MyPlace.Translate.translationServiceProvider'];
-
-function translateConfig ($translateProvider) {
-	$translateProvider.useLoader('MyPlace.Translate.translationLoader');
-	$translateProvider.use('pl-PL');
-	$translateProvider.preferredLanguage('pl-PL');
-	$translateProvider.fallbackLanguage('en-GB');
-}
-translateConfig.$inject = ['$translateProvider'];
-
-angular.module('MyPlace.Translate')
-.config(translationServiceConfig)
-.config(translateConfig)
-;
-})();
-(function () {
-'use strict';
-function translationLoaderFactory ($q, $http, translationService) {
-	return function translationLoader (options) {
-		var deferred = $q.defer()
-		  , lang = options.key
-		  , modules = translationService.getModules()
-		  , counter = 0
-		  , translations = {}
-		  ;
-		modules.forEach(function (module) {
-			var moduleDef = translationService.getModule(module.slug)
-			  ;
-			$http
-				.get(moduleDef.resolver(lang, module.slug))
-				.then(addTranslations(module.name))
-				.finally(tryResolve)
-				;
-
-		});
-		return deferred.promise;
-
-		function addTranslations (module) {
-			return function (receivedTranslations) {
-				var newTranslations = receivedTranslations.data;
-				for(var translationKey in newTranslations) {
-					var targetKey = module;
-					if(translationKey != module) {
-						targetKey += '.'+translationKey;
-					}
-					translations[targetKey] = newTranslations[translationKey];
-				}
-			};
-		}
-		
-
-		function tryResolve () {
-			counter++;
-			if(counter == modules.length) {
-				deferred.resolve(translations);
-			}
-		}
-	};
-}
-translationLoaderFactory.$inject = ['$q', '$http', 'MyPlace.Translate.translationService'];
-
-angular.module('MyPlace.Translate')
-.factory('MyPlace.Translate.translationLoader', translationLoaderFactory)
-;
-})();
-(function () {
-'use strict';
-function translationServiceProvider () {
-	var moduleMap = {}
-	  , actualModule = ''
-	  , registeredModules = []
-	  ;
-
-	this.registerModule = registerModule;
-
-	this.$get = function ($injector, moduleManager) {
-		moduleManager.addEventListener('moduleAdded', function (module) {
-			moduleRegister(module);
-			module.children.forEach(function (submodule) {
-				moduleRegister(submodule);
-			});
-		});
-
-		return {
-			registerModule: moduleRegister
-		  , getModules: getModules
-		  , getModule: getModule
-		}
-
-		function moduleRegister (module, resolvingFunction) {
-			var $translate = $injector.get('$translate');
-			registerModule(module, resolvingFunction);
-			$translate.refresh();
-		}
-	}
-	this.$get.$inject = ['$injector', 'MyPlace.Module.moduleManager'];
-
-	function registerModule (module, resolvingFunction) {
-		moduleMap[module.slug] = {
-			resolver: resolvingFunction || standardNameResolver,
-			moduleData: module
-		};
-		registeredModules.push(module);
-	}
-
-	function getModules () {
-		return registeredModules;
-	}
-
-	function getModule (moduleName) {
-		return moduleMap[moduleName];
-	}
-
-	function standardNameResolver (language, module) {
-		return 'frontend/modules/'+module+'/resources/translations/'+language+'.json';
-	}
-}
-
-angular.module('MyPlace.Translate')
-.provider('MyPlace.Translate.translationService', translationServiceProvider)
-;
-})();
-(function () {
-'use strict';
-function EventListener () {
-	var events = {};
-
-	this.removeEventListener = removeEventListener;
-	this.addEventListener = addEventListener;
-	this.launchEvent = launchEvent;
-
-	function removeEventListener (name, listener) {
-		var index = events[name].indexOf(listener);
-		if(index > -1) {
-			return events[name].splice(index, 1);
-		} else {
-			return null;
-		}
-	}
-	function addEventListener (name, listener) {
-		if(!events[name]) {
-			events[name] = [];
-		}
-		var index = events[name].indexOf(listener);
-		if(index == -1) {
-			events[name].push(listener);
-		}
-	}
-	function launchEvent (name, params, that) {
-		that = that || this;
-		if(events[name]) {
-			events[name].forEach(function (listener) {
-				listener.apply(that, params);
-			});	
-		}
-	}
-}
-
-angular.module('MyPlace.Utils')
-.factory('MyPlace.Utils.EventListener', function () {
-	return EventListener;
-});
 })();
 //# sourceMappingURL=my-place.js.map

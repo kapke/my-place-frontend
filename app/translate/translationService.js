@@ -1,6 +1,6 @@
 (function () {
 'use strict';
-function translationServiceProvider () {
+function translationServiceProvider (Config) {
 	var moduleMap = {}
 	  , actualModule = ''
 	  , registeredModules = []
@@ -47,9 +47,11 @@ function translationServiceProvider () {
 	}
 
 	function standardNameResolver (language, module) {
-		return 'frontend/modules/'+module+'/resources/translations/'+language+'.json';
+		return Config.frontendPrefix+'modules/'+module+'/resources/translations/'+language+'.json';
 	}
 }
+    
+    translationServiceProvider.$inject = ['MyPlace.configServiceProvider'];
 
 angular.module('MyPlace.Translate')
 .provider('MyPlace.Translate.translationService', translationServiceProvider)

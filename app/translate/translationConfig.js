@@ -2,10 +2,10 @@
 'use strict';
 function translationServiceConfig (config, translationServiceProvider) {
 	translationServiceProvider.registerModule({name: 'MyPlace', slug: 'MyPlace'}, function (lang) {
-		return config.frontendPrefix+'/translations/'+lang+'.json';
+		return config.frontendPrefix+'translations/'+lang+'.json';
 	});
 }
-translationServiceConfig.$inject = ['MyPlace.configService', 'MyPlace.Translate.translationServiceProvider'];
+translationServiceConfig.$inject = ['MyPlace.configServiceProvider', 'MyPlace.Translate.translationServiceProvider'];
 
 function translateConfig ($translateProvider) {
 	$translateProvider.useLoader('MyPlace.Translate.translationLoader');

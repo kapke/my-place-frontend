@@ -1,6 +1,6 @@
 (function () {
 'use strict';
-angular.module('MyPlace')
+angular.module('MyPlace.Config', [])
 .provider('MyPlace.configService', [function () {
     var that = this;
     
