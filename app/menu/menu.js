@@ -5,7 +5,7 @@ function menuCtrl () {
 
 menuCtrl.$inject = [];
 
-function menuDirective (menuManager) {
+function menuDirective (Config, menuManager) {
 	return {
 		restrict: 'E',
 		controller: function ($scope) {
@@ -16,11 +16,11 @@ function menuDirective (menuManager) {
 				$scope.menu = menuManager.getActualMenu();
 			});
 		},
-		templateUrl: 'frontend/template/menu/menu.tpl'
+		templateUrl: Config.frontendPrefix+'template/menu/menu.tpl'
 	};
 }
 
-menuDirective.$inject = ['MyPlace.Menu.menuManager'];
+menuDirective.$inject = ['MyPlace.configService', 'MyPlace.Menu.menuManager'];
 
 angular.module('MyPlace.Menu', [])
 .controller('MyPlace.Menu.menuCtrl', menuCtrl)

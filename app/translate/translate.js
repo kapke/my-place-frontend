@@ -1,1 +1,1 @@
-angular.module('MyPlace.Translate', ['pascalprecht.translate']);
+angular.module('MyPlace.Translate', ['pascalprecht.translate', 'MyPlace.Config']);

@@ -16,7 +16,7 @@ function moduleCtrl ($scope, $rootScope, $state, $resource, Config, moduleManage
 	});
 
 	function setActualTemplate () {
-		$scope.actualTemplate = 'frontend/modules/'+activeModule+'/template/'+activeView+'.tpl';
+		$scope.actualTemplate = Config.frontendPrefix+'/modules/'+activeModule+'/template/'+activeView+'.tpl';
 	}
 }
 
