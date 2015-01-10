@@ -69,14 +69,34 @@ angular.module('MyPlace.Api', ['ngResource'])
 'use strict';
 angular.module('MyPlace.Config', [])
 .provider('MyPlace.configService', [function () {
-    var that = this;
+    var that = this,
+        waiting = [];
     
 	this.backendPrefix = 'backend/web/app_dev.php/';
 	this.frontendPrefix = 'frontend/';
     
+    this.updateConfig = function (obj) {
+        for (var name in obj) {
+            this[name] = obj[name];
+        }
+    };
+    
+    this.waitForChanges = function () {
+        var deferred = $.Deferred();
+        waiting.push(deferred);
+        return deferred.promise();
+    }
+    
     this.$get = function () {
+        resolveWaiting();
         return that;
     };
+    
+    function resolveWaiting () {
+        waiting.forEach(function (w) {
+            w.resolve(that);
+        });
+    }
 }])
 ;
 })();
@@ -84,11 +104,13 @@ angular.module('MyPlace.Config', [])
 (function () {
 'use strict';
 function routingConfig ($stateProvider, Config) {
-    $stateProvider
-        .state('module', {
-            url: '/:module/:view',
-            templateUrl: Config.frontendPrefix+'template/module/moduleView.tpl'
-        });
+    Config.waitForChanges().then(function () {
+        $stateProvider
+            .state('module', {
+                url: '/:module/:view',
+                templateUrl: Config.frontendPrefix+'template/module/moduleView.tpl'
+            });    
+    });
 }
 routingConfig.$inject = ['$stateProvider', 'MyPlace.configServiceProvider'];
     
