@@ -1,6 +1,6 @@
 (function () {
 'use strict';
-function moduleList (moduleManager) {
+function moduleList (Config, moduleManager) {
 	return {
 		restrict: 'E',
 		controller: function ($scope) {
@@ -28,10 +28,10 @@ function moduleList (moduleManager) {
 				$scope.activeModule = activeModules;
 			}
 		},
-		templateUrl: 'frontend/template/module/moduleList.tpl'
+		templateUrl: Config.frontendPrefix+'template/module/moduleList.tpl'
 	};
 }
-moduleList.$inject = ['MyPlace.Module.moduleManager'];
+moduleList.$inject = ['MyPlace.configService', 'MyPlace.Module.moduleManager'];
 
 function moduleListCtrl () {
 }
