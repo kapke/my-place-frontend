@@ -363,6 +363,10 @@ function repositoryFactory ($q, $http, EventListener, capitalizeFirst) {
 							break;
 						case Number:
 							value = 0;
+							break;
+						case Date:
+							value = new Date();
+							break;
 					}	
 				}
 
