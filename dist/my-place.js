@@ -735,7 +735,7 @@ angular.module('MyPlace.Module')
 (function () {
 'use strict';
 function moduleManager ($state, api, EventListener) {
-	EventListener.call(this, ['moduleAdded']);
+	EventListener.call(this, ['moduleAdded', 'moduleListChanged']);
 
 	(function () {
 		var modules = api.Module.query(function (modules) {
