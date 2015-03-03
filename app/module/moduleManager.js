@@ -1,7 +1,7 @@
 (function () {
 'use strict';
 function moduleManager ($state, api, EventListener) {
-	EventListener.call(this);
+	EventListener.call(this, ['moduleAdded']);
 
 	(function () {
 		var modules = api.Module.query(function (modules) {

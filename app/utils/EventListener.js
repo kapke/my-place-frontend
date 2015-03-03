@@ -1,7 +1,14 @@
 (function () {
 'use strict';
-function EventListener () {
+function EventListener (promisedEvents) {
 	var events = {};
+	promisedEvents = (function (events) {
+		var output = {};
+		events.forEach(function (name) {
+			output[name] = [];
+		});
+		return output;
+	})(promisedEvents || []);
 
 	this.removeEventListener = removeEventListener;
 	this.addEventListener = addEventListener;
@@ -23,6 +30,11 @@ function EventListener () {
 		if(index == -1) {
 			events[name].push(listener);
 		}
+		if(promisedEvents[name]) {
+			promisedEvents[name].forEach(function (data) {
+				listener.apply(data.that, data.params);
+			});
+		}
 	}
 	function launchEvent (name, params, that) {
 		that = that || this;
@@ -30,6 +42,9 @@ function EventListener () {
 			events[name].forEach(function (listener) {
 				listener.apply(that, params);
 			});	
+		}
+		if(promisedEvents[name]) {
+			promisedEvents[name].push({params: params, that: that});
 		}
 	}
 }
