@@ -5,21 +5,21 @@ module.exports = function (grunt) {
                 sourceMap: true
             },
             dist: {
-                src: ['app/main.js',
-                      'app/*.js', 
-                      'app/translate/translate.js', 
-                      'app/utils/utils.js', 
-                      'app/utils/*.js', 
-                      'app/crud/*.js', 
-                      'app/translate/*.js', 
-                      'app/menu/*.js', 
-                      'app/module/*.js'],
+                src: ['src/main.js',
+                      'src/*.js', 
+                      'src/translate/translate.js', 
+                      'src/utils/utils.js', 
+                      'src/utils/*.js', 
+                      'src/crud/*.js', 
+                      'src/translate/*.js', 
+                      'src/menu/*.js', 
+                      'src/module/*.js'],
                 dest: 'dist/my-place.js'
             }
         },
         watch: {
             scripts: {
-                files: ['app/**/*.js', 'app/*.js'],
+                files: ['src/**/*.js', 'src/*.js'],
                 tasks: ['default']
             }
         }

@@ -1,4 +1,3 @@
-<h3>Menu</h3>
 <ul>
 	<li ng-repeat="item in menu.items">
 		<a ui-sref="module({module: menu.module, view: item.view})" href="#">{{item.title|translate}}</a>
