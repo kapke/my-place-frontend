@@ -17,16 +17,47 @@ module.exports = function (grunt) {
                 dest: 'dist/my-place.js'
             }
         },
+        sass: {
+            options: {
+                
+            },
+            dev: {
+                options: {
+                    outputStyle: 'nested',
+                    sourceComments: true,
+                    sourceMap: true,
+                    sourceMapContents: true,
+                    sourceMapEmbed: true
+                },
+                files: {
+                    'dist/style.css': 'style/style.scss'
+                }
+            },
+            dist: {
+                options: {
+                    outputStyle: 'compressed'
+                },
+                files: {
+                    'dist/style.min.css': 'style/style.scss'
+                }
+            }
+        },
         watch: {
             scripts: {
                 files: ['src/**/*.js', 'src/*.js'],
+                tasks: ['default']
+            },
+            styles: {
+                files: ['style/*.scss'],
                 tasks: ['default']
             }
         }
     });
     
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-contrib-watch');
     
-    grunt.registerTask('default', ['concat']);
+    grunt.registerTask('default', ['concat', 'sass:dev', 'sass:dist']);
 };

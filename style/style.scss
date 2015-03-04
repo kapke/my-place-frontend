@@ -23,9 +23,7 @@ my-place-module-list {
 	bottom: 0;
 	background-color: $primaryColor;
 	color: $secondaryColor;
-	padding: 1*$baseLineHeight;
-	padding-left: 1.5*$baseLineHeight;
-	padding-right: 0;
+	padding: 1*$baseLineHeight 0;
 	box-shadow: 2px 0 0.5*$baseLineHeight 0 rgba(0, 0, 0, 0.5) inset;
 	h3 {
 		display: none;
@@ -34,38 +32,13 @@ my-place-module-list {
 		li {
 			list-style-type: none;
 			margin-left: 0;
-			padding-left: 3*$baseLineHeight;
+			padding-left: $baseLineHeight;
 			position: relative;
 			top: 0.5*$baseLineHeight;
 			margin-bottom: 0.5*$baseLineHeight;
 			transition: background-color 0.2s linear;
-			&:before {
-				content: ' ';
-				position: absolute;
-				left: 0*$baseLineHeight;
-				top: 0*$baseLineHeight;
-				bottom: 0*$baseLineHeight;
-				width: 3*$baseLineHeight;
-				background-color: $primaryColor;
-			}
-			&:after {
-				content: ' ';
-				position: absolute;
-				left: 0*$baseLineHeight;
-				top: 0*$baseLineHeight;
-				bottom: 0*$baseLineHeight;
-				width: 3*$baseLineHeight;
-				border-top-left-radius: 50%;
-				border-bottom-left-radius: 50%;
-				background-color: transparent;
-				transition: background-color 0.2s linear;
-			}
 			&.active {
-				a {
-					&:after {
-						border-left: 1*$baseLineHeight solid $secondaryColor;
-					}
-				}
+				@include material;
 			}
 			&:hover, &.active {
 				background-color: $ternaryColor;
@@ -73,23 +46,17 @@ my-place-module-list {
 					background-color: $ternaryColor;
 				}
 			}
+			mp-module-widget {
+				display: block;
+				padding-bottom: $baseLineHeight;	
+			}
 			a {
 				color: inherit;
 				text-decoration: none;
 				display: block;
 				padding: 1*$baseLineHeight;
+				padding-bottom: 0;
 				padding-left: 0;
-				&:before {
-					z-index: 1;
-					content: ' ';
-					position: absolute;
-					left: 0.5*$baseLineHeight;
-					top: 0.5*$baseLineHeight;
-					width: 2*$baseLineHeight;
-					height: 2*$baseLineHeight;
-					border-radius: 50%;
-					background-color: $secondaryColor;
-				}
 				&:after {
 					content: ' ';
 					background-color: transparent;
