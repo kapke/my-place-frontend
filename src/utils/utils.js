@@ -15,5 +15,9 @@ angular.module('MyPlace.Utils', [])
 		};
 	};
 }])
-;
+.factory('MyPlace.Utils.templateUrl', ['MyPlace.configService', function (config) {
+	return function templateUrl (module, template) {
+		return config.frontendPrefix+'/modules/'+module+'/template/'+template+'.tpl';
+	};
+}]);
 })();

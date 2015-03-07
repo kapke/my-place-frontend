@@ -4,7 +4,7 @@ module.exports = function (grunt) {
             options: {
                 sourceMap: true
             },
-            dist: {
+            dev: {
                 src: ['src/main.js',
                       'src/*.js', 
                       'src/translate/translate.js', 

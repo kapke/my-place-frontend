@@ -134,7 +134,11 @@ angular.module('MyPlace.Utils', [])
 		};
 	};
 }])
-;
+.factory('MyPlace.Utils.templateUrl', ['MyPlace.configService', function (config) {
+	return function templateUrl (module, template) {
+		return config.frontendPrefix+'/modules/'+module+'/template/'+template+'.tpl';
+	};
+}]);
 })();
 (function () {
 'use strict';
@@ -325,14 +329,18 @@ function repositoryFactory ($q, $http, EventListener, capitalizeFirst) {
 		}
 
 		function saveEntity (entity) {
-			return entity.$save(function (u, getResponseHeaders) {
-				var location = getResponseHeaders().location;
-				$http.get(location).then(function (response) {
-					for(var prop in response.data) {
-						entity[prop] = response.data[prop]
-					}
-					parent.launchEvent(entityName[0]+'Saved', [entity]);
-				});
+			return entity.$save(function (data, getResponseHeaders) {
+                if(data.id) {
+                    entity.id = data.id;
+                }
+                parent.launchEvent(entityName[0]+'Saved', [entity]);
+				//var location = getResponseHeaders().location;
+				//$http.get(location).then(function (response) {
+				//	for(var prop in response.data) {
+				//		entity[prop] = response.data[prop]
+				//	}
+				//
+				//});
 			});
 		}
 
