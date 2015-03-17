@@ -64,10 +64,13 @@ function moduleManagerProvider () {
 		EventListener.call(this, ['moduleAdded', 'moduleListChanged']);
 
 		(function () {
-			var modules = api.Module.query(function (modules) {
+			api.Module.query(function (modules) {
 				modules.forEach(function (module) {
 					registerModule(module);
 				});
+                if($state.params.module) {
+                    setActiveModuleAndView($state.params.module, $state.params.view);
+                }
 			});
 		})();
 		var that = this,

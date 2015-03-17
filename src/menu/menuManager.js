@@ -3,13 +3,13 @@
 function menuManager (EventListener, api, moduleManager) {
 	EventListener.call(this);
 
-	var that = this
-	  , actualMenu = {}
-	  , actualModule = null
-	  , actualModuleFamily = []
-	  , downloadTries = 0
-	  , downloadInterval = 100;
-	  ;
+    var that = this,
+        actualMenu = {},
+        actualModule = null,
+        actualModuleFamily = [],
+        downloadTries = 0,
+        downloadInterval = 100;
+	  
 
 	this.getActualMenu = getActualMenu;
 
@@ -23,20 +23,19 @@ function menuManager (EventListener, api, moduleManager) {
 	function tryUpdate () {
 		actualModule = moduleManager.getActiveModule();
 		if(actualModule) {
-			var isModuleinFamily = (actualModuleFamily.indexOf(actualModule.slug) > -1);
-			if(!isModuleinFamily) {
+			var isModuleInFamily = (actualModuleFamily.indexOf(actualModule.slug) > -1);
+			if(!isModuleInFamily) {
 				actualModuleFamily = moduleManager.getModuleFamily(actualModule).map(function (module) {
 					return module.slug;
 				});
 				updateMenu();		
 			}
-			
 		}
 	}
 
 	function updateMenu () {
 		if(downloadTries > 5) {
-			if(downloadInterval > 10000) {
+			if(downloadInterval > 100000) {
 				return;
 			}
 			downloadInterval *= 5;
@@ -71,17 +70,16 @@ function menuManager (EventListener, api, moduleManager) {
 			downloadInterval = 100;
 			downloadTries = 0;
 		} else {
-			// actualModule = moduleManager.getActiveModule();
-			// downloadTries += 1;
+			actualModule = moduleManager.getActiveModule();
+			downloadTries += 1;
 			actualMenu = {};
-			// setTimeout(updateMenu, downloadInterval);
+			setTimeout(updateMenu, downloadInterval);
 		}
 	}
 
 	function calculateVisibility (menu) {
-		var visible = false
-		  , itemsCount = 0
-		  ;
+		var visible = false,
+		    itemsCount = 0;
 
 		if(menu.items) {
 			itemsCount = menu.items.length;

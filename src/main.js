@@ -1,6 +1,6 @@
 (function () {
 'use strict';
-angular.module('MyPlace', ['ui.router', 'ngAnimate', 'MyPlace.Config', 'MyPlace.Crud', 'MyPlace.Translate', 'MyPlace.Menu', 'MyPlace.Module']);
+angular.module('MyPlace', ['ui.router', 'ngAnimate', 'ngMaterial', 'MyPlace.Config', 'MyPlace.Crud', 'MyPlace.Translate', 'MyPlace.Menu', 'MyPlace.Module']);
 
 function mainCtrl ($scope, $timeout, menuManager) {
 	$scope.menuVisible = false;

@@ -6,6 +6,8 @@ $primaryColor: #006ab0;
 $secondaryColor: #fff;
 $ternaryColor: #00458f;
 
+$sidenavWidth: 304px;
+
 @mixin independentShadow {
 	&:after {
 		display: block;
