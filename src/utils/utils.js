@@ -16,8 +16,13 @@ angular.module('MyPlace.Utils', [])
 	};
 }])
 .factory('MyPlace.Utils.templateUrl', ['MyPlace.configService', function (config) {
-	return function templateUrl (module, template) {
-		return config.frontendPrefix+'/modules/'+module+'/template/'+template+'.tpl';
+	return function templateUrl (template, module) {
+        var src = config.frontendPrefix;
+        if(module) {
+            src += 'modules/'+module +'/';
+        }
+        src += 'template/'+template+'.tpl';
+		return src;
 	};
 }]);
 })();

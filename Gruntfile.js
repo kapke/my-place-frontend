@@ -2,7 +2,8 @@ module.exports = function (grunt) {
     grunt.initConfig({
         concat: {
             options: {
-                sourceMap: true
+                sourceMap: true,
+                //footer: '//# sourceMappingURL=./my-place.js.map'
             },
             dev: {
                 src: ['src/main.js',
@@ -16,6 +17,9 @@ module.exports = function (grunt) {
                       'src/module/*.js'],
                 dest: 'dist/my-place.js'
             }
+        },
+        copy: {
+            'bower_components/angular-material/angular-material.scss': 'bower_components/angular-material/angular-material.css'
         },
         sass: {
             options: {
@@ -54,10 +58,11 @@ module.exports = function (grunt) {
         }
     });
     
-    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-concat-sourcemaps');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-contrib-watch');
     
-    grunt.registerTask('default', ['concat', 'sass:dev', 'sass:dist']);
+    grunt.registerTask('default', ['copy', 'concat', 'sass:dev', 'sass:dist']);
 };

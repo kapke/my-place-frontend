@@ -1,6 +1,6 @@
 (function () {
 'use strict';
-angular.module('MyPlace', ['ui.router', 'ngAnimate', 'MyPlace.Config', 'MyPlace.Crud', 'MyPlace.Translate', 'MyPlace.Menu', 'MyPlace.Module']);
+angular.module('MyPlace', ['ui.router', 'ngAnimate', 'ngMaterial', 'MyPlace.Config', 'MyPlace.Crud', 'MyPlace.Translate', 'MyPlace.Menu', 'MyPlace.Module']);
 
 function mainCtrl ($scope, $timeout, menuManager) {
 	$scope.menuVisible = false;
@@ -116,6 +116,18 @@ routingConfig.$inject = ['$stateProvider', 'MyPlace.configServiceProvider'];
     
 angular.module('MyPlace').config(routingConfig);
 })();
+(function () {
+    function view (templateUrl) {
+        return {
+            restrict: 'E',
+            templateUrl: templateUrl('view')
+        };
+    }
+    view.$inject = ['MyPlace.Utils.templateUrl'];
+
+    angular.module('MyPlace')
+        .directive('mpView', view);
+})();
 angular.module('MyPlace.Translate', ['pascalprecht.translate', 'MyPlace.Config']);
 (function () {
 'use strict';
@@ -135,8 +147,13 @@ angular.module('MyPlace.Utils', [])
 	};
 }])
 .factory('MyPlace.Utils.templateUrl', ['MyPlace.configService', function (config) {
-	return function templateUrl (module, template) {
-		return config.frontendPrefix+'/modules/'+module+'/template/'+template+'.tpl';
+	return function templateUrl (template, module) {
+        var src = config.frontendPrefix;
+        if(module) {
+            src += 'modules/'+module +'/';
+        }
+        src += 'template/'+template+'.tpl';
+		return src;
 	};
 }]);
 })();
@@ -536,166 +553,184 @@ angular.module('MyPlace.Translate')
 ;
 })();
 (function () {
-'use strict';
-function menuCtrl () {
-}
+	'use strict';
+	function menuCtrl () {
+	}
 
-menuCtrl.$inject = [];
+	menuCtrl.$inject = [];
 
-function menuDirective (Config, menuManager) {
-	return {
-		restrict: 'E',
-		controller: function ($scope) {
-			$scope.menu = {
-				visible: false
-			};
-			menuManager.addEventListener('menuUpdated', function () {
-				$scope.menu = menuManager.getActualMenu();
-			});
-		},
-		templateUrl: Config.frontendPrefix+'template/menu/menu.tpl'
-	};
-}
+	function menuDirective ($rootScope, $state, $timeout, Config, menuManager, templateUrl) {
+		return {
+			restrict: 'E',
+			controller: function ($scope) {
+				$scope.menu = {
+					visible: false
+				};
+                $scope.view = $state.params.view;
 
-menuDirective.$inject = ['MyPlace.configService', 'MyPlace.Menu.menuManager'];
+                $rootScope.$on('$stateChangeSuccess', function () {
+                    $scope.view = $state.params.view;
+                });
+				menuManager.addEventListener('menuUpdated', function () {
+					$timeout(function () {
+						$scope.menu = menuManager.getActualMenu();
+					}, 300);
+				});
+			},
+			templateUrl: templateUrl('menu/menu')
+		};
+	}
+	menuDirective.$inject = ['$rootScope', '$state', '$timeout', 'MyPlace.configService', 'MyPlace.Menu.menuManager', 'MyPlace.Utils.templateUrl'];
 
-angular.module('MyPlace.Menu', [])
-.controller('MyPlace.Menu.menuCtrl', menuCtrl)
-.directive('myPlaceMenu', menuDirective)
-;
+	function menuItemDirective ($state, templateUrl) {
+		return {
+			restrict: 'E',
+			scope: {
+				item: '=',
+                module: '='
+			},
+			templateUrl: templateUrl('menu/menuItem'),
+			link: function ($scope, element, attrs) {
+				element.parent().on('click', function (e) {
+                    $state.go('module', {
+                        module: $scope.module,
+                        view: $scope.item.view
+                    });
+				});
+			}
+		};
+	}
+	menuItemDirective.$inject = ['$state', 'MyPlace.Utils.templateUrl'];
+
+	angular.module('MyPlace.Menu', [])
+		.controller('MyPlace.Menu.menuCtrl', menuCtrl)
+		.directive('mpMenu', menuDirective)
+		.directive('mpMenuItem', menuItemDirective);
 })();
 (function () {
-'use strict';
-function menuManager (EventListener, api, moduleManager) {
-	EventListener.call(this);
+	'use strict';
+	function menuManager ($timeout, EventListener, api, moduleManager) {
+		EventListener.call(this);
 
-	var that = this
-	  , actualMenu = {}
-	  , actualModule = null
-	  , actualModuleFamily = []
-	  , downloadTries = 0
-	  , downloadInterval = 100;
-	  ;
+	    var that = this,
+	        actualMenu = {},
+	        actualModule = null,
+	        actualModuleFamily = [];
+		  
+		this.getActualMenu = getActualMenu;
 
-	this.getActualMenu = getActualMenu;
+		moduleManager.addEventListener('moduleListChanged', function () {
+			deferUpdate();
+		});
+		moduleManager.addEventListener('activeModuleChanged', function () {
+			deferUpdate();
+		});
 
-	moduleManager.addEventListener('moduleListChanged', tryUpdate);
-	moduleManager.addEventListener('activeModuleChanged', tryUpdate);
+		function getActualMenu () {
+			return actualMenu;
+		}
 
-	function getActualMenu () {
-		return actualMenu;
-	}
-
-	function tryUpdate () {
-		actualModule = moduleManager.getActiveModule();
-		if(actualModule) {
-			var isModuleinFamily = (actualModuleFamily.indexOf(actualModule.slug) > -1);
-			if(!isModuleinFamily) {
-				actualModuleFamily = moduleManager.getModuleFamily(actualModule).map(function (module) {
-					return module.slug;
+		function updateMenu () {
+			if(actualModule) {
+				if(actualModule.parent) {
+					actualModule = actualModule.parent;
+				}
+				actualMenu = api.Menu.get({module: actualModule.slug}, function () {
+					calculateVisibility(actualMenu);
+					that.launchEvent('menuUpdated');
 				});
-				updateMenu();		
-			}
-			
-		}
-	}
-
-	function updateMenu () {
-		if(downloadTries > 5) {
-			if(downloadInterval > 10000) {
-				return;
-			}
-			downloadInterval *= 5;
-			downloadTries = 0;
-		}
-		if(actualModule) {
-			if(actualModule.parent) {
-				actualModule = actualModule.parent;
-			}
-			actualMenu = api.Menu.get({module: actualModule.slug}, function () {
 				calculateVisibility(actualMenu);
 				that.launchEvent('menuUpdated');
-			});
-			calculateVisibility(actualMenu);
-			that.launchEvent('menuUpdated');
-			(function (module) {
-				actualMenu.$promise.then(function (actualMenu) {
-					actualMenu.module = module.slug;
-					module.children.forEach(function (submodule) {
-						if(!actualMenu.extensions) {
-							actualMenu.extensions = [];
-						}
-						var submenu = api.Menu.get({module: submodule.slug}, function (submenu) {
-							submenu.module = submodule.slug;	
+				(function (module) {
+					actualMenu.$promise.then(function (actualMenu) {
+						actualMenu.module = module.slug;
+						module.children.forEach(function (submodule) {
+							if(!actualMenu.extensions) {
+								actualMenu.extensions = [];
+							}
+							var submenu = api.Menu.get({module: submodule.slug}, function (submenu) {
+								submenu.module = submodule.slug;	
+							});
+							actualMenu.extensions.push(submenu);
+							calculateVisibility(actualMenu);
+							that.launchEvent('menuUpdated');
 						});
-						actualMenu.extensions.push(submenu);
-						calculateVisibility(actualMenu);
-						that.launchEvent('menuUpdated');
 					});
-				});
-			})(actualModule);
-			downloadInterval = 100;
-			downloadTries = 0;
-		} else {
-			// actualModule = moduleManager.getActiveModule();
-			// downloadTries += 1;
-			actualMenu = {};
-			// setTimeout(updateMenu, downloadInterval);
+				})(actualModule);
+			}
+		}
+
+		function calculateVisibility (menu) {
+			var visible = false,
+			    itemsCount = 0;
+
+			if(menu.items) {
+				itemsCount = menu.items.length;
+				visible = (itemsCount>0);
+				if(!visible && menu.extensions) {
+					menu.extensions.forEach(function (extension) {
+						itemsCount += extension.items.length;
+					});
+					visible = (itemsCount>0);
+				}
+			} 
+			menu.visible = visible;
+		}
+
+		function deferUpdate () {
+			if(deferUpdate.promise) {
+				$timeout.cancel(deferUpdate.promise);
+			}
+			deferUpdate.promise = $timeout(function () {
+				actualModule = moduleManager.getActiveModule();
+				if(actualModule) {
+					var isModuleInFamily = (actualModuleFamily.indexOf(actualModule.slug) > -1);
+					if(!isModuleInFamily) {
+						actualModuleFamily = moduleManager.getModuleFamily(actualModule).map(function (module) {
+							return module.slug;
+						});
+						updateMenu();		
+					}
+				}
+			}, 200);
 		}
 	}
+	menuManager.$inject = ['$timeout', 'MyPlace.Utils.EventListener', 'MyPlace.apiService', 'MyPlace.Module.moduleManager'];
 
-	function calculateVisibility (menu) {
-		var visible = false
-		  , itemsCount = 0
-		  ;
-
-		if(menu.items) {
-			itemsCount = menu.items.length;
-			visible = (itemsCount>0);
-			if(!visible && menu.extensions) {
-				menu.extensions.forEach(function (extension) {
-					itemsCount += extension.items.length;
-				});
-				visible = (itemsCount>0);
-			}
-		} 
-		menu.visible = visible;
-	}
-}
-
-menuManager.$inject = ['MyPlace.Utils.EventListener', 'MyPlace.apiService', 'MyPlace.Module.moduleManager'];
-
-angular.module('MyPlace.Menu')
-.service('MyPlace.Menu.menuManager', menuManager)
-;
+	angular.module('MyPlace.Menu')
+		.service('MyPlace.Menu.menuManager', menuManager);
 })();
 (function () {
 'use strict';
-function moduleCtrl ($scope, $rootScope, $state, $resource, Config, moduleManager) {
-	var activeModule = ''
-	  , activeView = ''
-	  ;
+function moduleCtrl ($scope, $rootScope, $state, $timeout, moduleManager, templateUrl) {
+	var shownFirst = false,
+        activeModule = '',
+	    activeView = '';
 	  
 	$scope.actualTemplate = '';
 	$rootScope.$on('$stateChangeSuccess', function () {
 		moduleManager.setActiveModuleAndView($state.params.module, $state.params.view);
 	});
 	moduleManager.addEventListener('activeModuleAndViewChanged', function (module, view) {
+        if(!shownFirst) {
+            shownFirst = true;
+            $scope.$emit('MyPlace.Module.initiated');
+        }
 		activeModule = module;
 		activeView = view;
 		setActualTemplate();
 	});
+    moduleManager.setActiveModuleAndView($state.params.module, $state.params.view);
 
 	function setActualTemplate () {
-		$scope.actualTemplate = Config.frontendPrefix+'/modules/'+activeModule+'/template/'+activeView+'.tpl';
+		$scope.actualTemplate = templateUrl(activeView, activeModule);
 	}
 }
 
-moduleCtrl.$inject = ['$scope', '$rootScope', '$state', '$resource', 'MyPlace.configService', 'MyPlace.Module.moduleManager'];
+moduleCtrl.$inject = ['$scope', '$rootScope', '$state', '$timeout', 'MyPlace.Module.moduleManager', 'MyPlace.Utils.templateUrl'];
 
 angular.module('MyPlace.Module', ['MyPlace.Utils', 'MyPlace.Api'])
-.controller('MyPlace.Module.moduleCtrl', moduleCtrl)
-;
+    .controller('MyPlace.Module.moduleCtrl', moduleCtrl);
 })();
 (function () {
 'use strict';
@@ -738,7 +773,7 @@ function moduleListCtrl () {
 
 angular.module('MyPlace.Module')
 .controller('MyPlace.Module.moduleListCtrl', moduleListCtrl)
-.directive('myPlaceModuleList', moduleList);
+.directive('mpModuleList', moduleList);
 })();
 (function () {
 'use strict';
@@ -775,7 +810,6 @@ function moduleManagerProvider () {
 				return a-b;
 			}
 		});
-		console.log(prioritiesList);
 		prioritiesList.forEach(function (priority) {
 			inversedOrder[priority].forEach(function (name) {
 				orderList.push(name);
@@ -806,10 +840,13 @@ function moduleManagerProvider () {
 		EventListener.call(this, ['moduleAdded', 'moduleListChanged']);
 
 		(function () {
-			var modules = api.Module.query(function (modules) {
+			api.Module.query(function (modules) {
 				modules.forEach(function (module) {
 					registerModule(module);
 				});
+                if($state.params.module) {
+                    setActiveModuleAndView($state.params.module, $state.params.view);
+                }
 			});
 		})();
 		var that = this,
@@ -900,29 +937,39 @@ function moduleManagerProvider () {
 
 
 angular.module('MyPlace.Module')
-.provider('MyPlace.Module.moduleManager', moduleManagerProvider)
-;
+	.provider('MyPlace.Module.moduleManager', moduleManagerProvider);
 })();
 (function () {
 'use strict';
-function moduleWidget (api) {
+function moduleWidget ($state, templateUrl, moduleManager) {
 	return {
 		restrict: 'E',
-		templateUrl: api.FRONTEND+'template/module/moduleWidget.tpl',
+		templateUrl: templateUrl('module/moduleWidget'),
 		scope: {
 			module: '='
 		},
-		link: function ($scope) {
+		link: function ($scope, element) {
+            element.parent().on('click', function (e) {
+            	e.preventDefault();
+            	var activeModule = moduleManager.getActiveModule();
+            	if(!activeModule || activeModule.slug != $scope.module.slug) {
+            		$state.go('module', {
+	                    module: $scope.module.slug,
+	                    view: 'main'
+	                });
+            	}
+            });
 			$scope.innerText = $scope.module.name;
-			$scope.widgetTemplateSrc = api.FRONTEND+'modules/'+$scope.module.slug+'/template/moduleWidget.tpl';
+			$scope.widgetTemplateSrc = templateUrl('moduleWidget', $scope.module.slug);
 			$scope.$on('MyPlace.Module.changeWidgetText', function (event, newText) {
 				$scope.innerText = newText;
 			});
 		}
 	}
 }
-moduleWidget.$inject = ['MyPlace.apiService'];
+moduleWidget.$inject = ['$state', 'MyPlace.Utils.templateUrl', 'MyPlace.Module.moduleManager'];
 
 angular.module('MyPlace.Module')
 	.directive('mpModuleWidget', moduleWidget);
 })();
+//# sourceMappingURL=my-place.js.map

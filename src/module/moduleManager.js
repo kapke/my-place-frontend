@@ -33,7 +33,6 @@ function moduleManagerProvider () {
 				return a-b;
 			}
 		});
-		console.log(prioritiesList);
 		prioritiesList.forEach(function (priority) {
 			inversedOrder[priority].forEach(function (name) {
 				orderList.push(name);
@@ -64,10 +63,13 @@ function moduleManagerProvider () {
 		EventListener.call(this, ['moduleAdded', 'moduleListChanged']);
 
 		(function () {
-			var modules = api.Module.query(function (modules) {
+			api.Module.query(function (modules) {
 				modules.forEach(function (module) {
 					registerModule(module);
 				});
+                if($state.params.module) {
+                    setActiveModuleAndView($state.params.module, $state.params.view);
+                }
 			});
 		})();
 		var that = this,
@@ -158,6 +160,5 @@ function moduleManagerProvider () {
 
 
 angular.module('MyPlace.Module')
-.provider('MyPlace.Module.moduleManager', moduleManagerProvider)
-;
+	.provider('MyPlace.Module.moduleManager', moduleManagerProvider);
 })();

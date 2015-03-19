@@ -39,5 +39,5 @@ function moduleListCtrl () {
 
 angular.module('MyPlace.Module')
 .controller('MyPlace.Module.moduleListCtrl', moduleListCtrl)
-.directive('myPlaceModuleList', moduleList);
+.directive('mpModuleList', moduleList);
 })();
