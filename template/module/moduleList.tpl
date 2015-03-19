@@ -3,7 +3,7 @@
         <md-list layout="column">
             <md-item ng-repeat="module in modules">
                 <md-item-content>
-                    <md-button>
+                    <md-button href="#">
                         <mp-module-widget module="module" ng-class="{'active': isModuleActive(module.slug)}" />
                     </md-button>
                 </md-item-content>

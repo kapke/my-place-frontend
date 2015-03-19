@@ -33,7 +33,6 @@ function moduleManagerProvider () {
 				return a-b;
 			}
 		});
-		console.log(prioritiesList);
 		prioritiesList.forEach(function (priority) {
 			inversedOrder[priority].forEach(function (name) {
 				orderList.push(name);
@@ -161,6 +160,5 @@ function moduleManagerProvider () {
 
 
 angular.module('MyPlace.Module')
-.provider('MyPlace.Module.moduleManager', moduleManagerProvider)
-;
+	.provider('MyPlace.Module.moduleManager', moduleManagerProvider);
 })();

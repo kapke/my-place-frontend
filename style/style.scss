@@ -54,6 +54,7 @@ mp-view {
             top: 0;
             right: 0;
             bottom: 0;
+            z-index: 0;
             @extend .md-sidenav-right;
             @extend .md-whiteframe-z2;
             a {
@@ -70,6 +71,7 @@ mp-view {
         }
         mp-module-widget, mp-menu-item {
             @extend .md-button;
+            position: static;
             text-transform: none;
             width: 100%;
             text-align: left;
