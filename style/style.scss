@@ -1,7 +1,15 @@
 @import url(http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,700,500italic,700italic,900,900italic&subset=latin,cyrillic,latin-ext,vietnamese,greek,greek-ext,cyrillic-ext);
-@import '../bower_components/angular-material/angular-material.scss';
+@import '../bower_components/angular-material/angular-material';
+@import '../bower_components/angular-material-internal/src/core/style/variables';
+@import '../bower_components/angular-material-internal/src/core/style/mixins';
+@import '../bower_components/angular-material-internal/src/core/style/layout';
+@import '../bower_components/angular-material-internal/src/core/style/structure';
 @import 'base';
 @import 'reset';
+
+body {
+    background-color: $background;
+}
 
 mp-view {
     > section {
@@ -11,37 +19,47 @@ mp-view {
         right: 0;
         bottom: 0;
     }
+    .view-wrapper {
+        position: relative;
+        overflow: auto;
+    }
     ui-view {
-        transition: all 1s ease-out;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        transition: all 0.2s ease-out;
+        background-color: $background;
         &.ng-enter {
-            transform: translateY(-100%);
+            transform: translateY(-200%);
             opacity: 0;
-            transition-duration: 0.4s;
+            transition-delay: 0.5s;
         }
         &.ng-enter-active {
             left: 0;
             transform: translateY(0);
             opacity: 1;
-            transition-duration: 0.4s;
+            transition-delay: 0.5s;
         }
         &.ng-leave {
             top: 0;
             opacity: 1;
         }
         &.ng-leave-active {
-            top: 100%;
+            top: 50%;
             opacity: 0;
         }
-        &+ui-view {
-            position: absolute;
-            left: 0;
-            top: 0;
+        &.no-menu {
+            &.ng-enter, &.ng-enter-active {
+                transition-delay: 0.2s;
+            }
         }
     }
     mp-module-list, mp-menu {
         position: relative;
         width: $sidenavWidth;
-        transition: all 0.4s ease-out;
+        transition: all 0.2s ease-out;
+        transition-delay: 0.2s;
         opacity: 1;
         &.ng-hide {
             transform: translateX(100%);
@@ -63,8 +81,9 @@ mp-view {
         }
         md-item-content {
             @extend .md-tile-content;
-            padding: 0;
+            padding: 0 0 0 0;
             > .md-button {
+                padding-left: 1em;
                 width: 100%;
                 text-align: left;
             }
@@ -80,6 +99,10 @@ mp-view {
             }
         }
     }
+}
+
+md-card {
+    background-color: white;
 }
 
 //.module-section {

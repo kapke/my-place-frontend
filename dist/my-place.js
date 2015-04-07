@@ -19,6 +19,68 @@ angular.module('MyPlace')
 ;
 })();
 (function () {
+    'use strict';
+    angular.module('MyPlace.Utils', [])
+        .factory('capitalizeFirst', function () {
+            return function capitalizeFirst (str) {
+                return str.slice(0, 1).toUpperCase()+str.substr(1);
+            };
+        })
+        .factory('promisifyReturn',['$q', function ($q) {
+            return function promisifyReturn (fn) {
+                return function wrapper () {
+                    var deferred = $q.defer();
+                    deferred.resolve(fn.call(null, arguments));
+                    return deferred.promise;
+                };
+            };
+        }])
+        .factory('defer', ['$timeout', function ($timeout) {
+            var defers = {};
+            return function defer (func, time) {
+                time = time || 250;
+                return function () {
+                    if(defers[func]) {
+                        $timeout.cancel(defers[func]);
+                    }
+                    defers[func] = $timeout(func, time);
+                };
+            };
+        }])
+        .provider('MyPlace.Utils.templateUrl', ['MyPlace.configServiceProvider', function (config) {
+            function templateUrl (template, module) {
+                var src = '';
+                if(module) {
+                    src += config.frontendPrefix+'modules/'+module +'/';
+                } else {
+                    src += config.myPlaceLocation();
+                }
+                src += 'template/'+template+'.tpl';
+                return src;
+            }
+
+            this.$get = function () {
+                return templateUrl;
+            };
+
+            this.templateUrl = templateUrl;
+        }])
+        .factory('range', function () {
+           return function (startStop, stop, step) {
+               var start = stop ? startStop : 0,
+                   output = [];
+               stop = stop ? stop : startStop;
+               step = (step?step:1)*(start <= stop ? 1 : -1);
+
+               for(var i=0; stop-i*step >= start*step; i++) {
+                   output.push(start + i*step);
+               }
+
+               return output;
+           }
+        });
+})();
+(function () {
 'use strict';
 function apiService ($resource, Config) {
 	var backendPrefix = Config.backendPrefix
@@ -67,52 +129,62 @@ angular.module('MyPlace.Api', ['ngResource'])
 
 (function () {
 'use strict';
-angular.module('MyPlace.Config', [])
-.provider('MyPlace.configService', [function () {
-    var that = this,
-        waiting = [];
-    
-	this.backendPrefix = 'backend/web/app_dev.php/';
-	this.frontendPrefix = 'frontend/';
-    
-    this.updateConfig = function (obj) {
-        for (var name in obj) {
-            this[name] = obj[name];
-        }
-    };
-    
-    this.waitForChanges = function () {
-        var deferred = $.Deferred();
-        waiting.push(deferred);
-        return deferred.promise();
-    }
-    
-    this.$get = function () {
-        resolveWaiting();
-        return that;
-    };
-    
-    function resolveWaiting () {
-        waiting.forEach(function (w) {
-            w.resolve(that);
-        });
-    }
-}])
-;
+    angular.module('MyPlace.Config', [])
+        .provider('MyPlace.configService', [function () {
+            var that = this,
+                waiting = [];
+
+            this.BOWER_LOCATION = 'bower_components/my-place/';
+
+            this.backendPrefix = 'backend/web/app_dev.php/';
+            this.frontendPrefix = 'frontend/';
+            this.myPlaceLocation = function (value) {
+                if(angular.isDefined(value)) {
+                    this.myPlaceLocation.$value = this.frontendPrefix+value;
+                } else {
+                    return this.myPlaceLocation.$value;
+                }
+            };
+            this.myPlaceLocation.$value = '';
+
+
+            this.updateConfig = function (obj) {
+                for (var name in obj) {
+                    this[name] = obj[name];
+                }
+            };
+
+            this.waitForChanges = function () {
+                var deferred = $.Deferred();
+                waiting.push(deferred);
+                return deferred.promise();
+            };
+
+            this.$get = function () {
+                resolveWaiting();
+                return that;
+            };
+
+            function resolveWaiting () {
+                waiting.forEach(function (w) {
+                    w.resolve(that);
+                });
+            }
+        }]);
 })();
 
 (function () {
 'use strict';
-function routingConfig ($stateProvider, Config) {
+function routingConfig ($stateProvider, Config, templateUrl) {
     Config.waitForChanges().then(function () {
         $stateProvider
             .state('module', {
                 url: '/:module/:view',
-                templateUrl: Config.frontendPrefix+'template/module/moduleView.tpl'
+                templateUrl: templateUrl.templateUrl('module/moduleView')
             });    
     });
 }
-routingConfig.$inject = ['$stateProvider', 'MyPlace.configServiceProvider'];
+routingConfig.$inject = ['$stateProvider', 'MyPlace.configServiceProvider', 'MyPlace.Utils.templateUrlProvider'];
     
 angular.module('MyPlace').config(routingConfig);
 })();
@@ -129,34 +201,6 @@ angular.module('MyPlace').config(routingConfig);
         .directive('mpView', view);
 })();
 angular.module('MyPlace.Translate', ['pascalprecht.translate', 'MyPlace.Config']);
-(function () {
-'use strict';
-angular.module('MyPlace.Utils', [])
-.factory('capitalizeFirst', function () {
-	return function capitalizeFirst (str) {
-		return str.slice(0, 1).toUpperCase()+str.substr(1);
-	};
-})
-.factory('promisifyReturn',['$q', function ($q) {
-	return function promisifyReturn (fn) {
-		return function wrapper () {
-			var deferred = $q.defer();
-			deferred.resolve(fn.call(null, arguments));
-			return deferred.promise;
-		};
-	};
-}])
-.factory('MyPlace.Utils.templateUrl', ['MyPlace.configService', function (config) {
-	return function templateUrl (template, module) {
-        var src = config.frontendPrefix;
-        if(module) {
-            src += 'modules/'+module +'/';
-        }
-        src += 'template/'+template+'.tpl';
-		return src;
-	};
-}]);
-})();
 (function () {
 'use strict';
 function EventListener (promisedEvents) {
@@ -425,7 +469,7 @@ angular.module('MyPlace.Crud')
 'use strict';
 function translationServiceConfig (config, translationServiceProvider) {
 	translationServiceProvider.registerModule({name: 'MyPlace', slug: 'MyPlace'}, function (lang) {
-		return config.frontendPrefix+'translations/'+lang+'.json';
+		return config.myPlaceLocation()+'translations/'+lang+'.json';
 	});
 }
 translationServiceConfig.$inject = ['MyPlace.configServiceProvider', 'MyPlace.Translate.translationServiceProvider'];
@@ -734,9 +778,10 @@ angular.module('MyPlace.Module', ['MyPlace.Utils', 'MyPlace.Api'])
 })();
 (function () {
 'use strict';
-function moduleList (Config, moduleManager) {
+function moduleList (templateUrl, moduleManager) {
 	return {
 		restrict: 'E',
+        templateUrl: templateUrl('module/moduleList'),
 		controller: function ($scope) {
 			$scope.modules = [];
 			$scope.activeModule = [];
@@ -761,11 +806,10 @@ function moduleList (Config, moduleManager) {
 				})(moduleManager.getActiveModule());
 				$scope.activeModule = activeModules;
 			}
-		},
-		templateUrl: Config.frontendPrefix+'template/module/moduleList.tpl'
+		}
 	};
 }
-moduleList.$inject = ['MyPlace.configService', 'MyPlace.Module.moduleManager'];
+moduleList.$inject = ['MyPlace.Utils.templateUrl', 'MyPlace.Module.moduleManager'];
 
 function moduleListCtrl () {
 }

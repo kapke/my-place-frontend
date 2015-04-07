@@ -1,4 +1,44 @@
 @import "../node_modules/material-typography/material-typography.scss";
+@import "../bower_components/angular-material-internal/src/core/style/variables";
+
+$background: #EEEEEE;
+
+@mixin whiteframe ($level: 1) {
+    $shadow: '';
+    $z: 0;
+    @if ($level == 1) {
+        $shadow: $whiteframe-shadow-z1;
+        $z: $whiteframe-zindex-z1;
+    } @elseif ($level == 2) {
+        $shadow: $whiteframe-shadow-z2;
+        $z: $whiteframe-zindex-z2;
+    } @elseif ($level == 3) {
+        $shadow: $whiteframe-shadow-z3;
+        $z: $whiteframe-zindex-z3;
+    } @elseif ($level == 4) {
+        $shadow: $whiteframe-shadow-z4;
+        $z: $whiteframe-zindex-z4;
+    } @elseif ($level == 5) {
+        $shadow: $whiteframe-shadow-z5;
+        $z: $whiteframe-zindex-z5;
+    }
+    box-shadow: $shadow;
+    z-index: $z;
+    background-color: white;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 $baseFontSize: 12pt;
 $baseLineHeight: 15pt;
@@ -9,6 +49,8 @@ $secondaryColor: #fff;
 $ternaryColor: #00458f;
 
 $sidenavWidth: 304px;
+
+
 
 @mixin independentShadow {
 	&:after {

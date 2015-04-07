@@ -1,8 +1,9 @@
 (function () {
 'use strict';
-function moduleList (Config, moduleManager) {
+function moduleList (templateUrl, moduleManager) {
 	return {
 		restrict: 'E',
+        templateUrl: templateUrl('module/moduleList'),
 		controller: function ($scope) {
 			$scope.modules = [];
 			$scope.activeModule = [];
@@ -27,11 +28,10 @@ function moduleList (Config, moduleManager) {
 				})(moduleManager.getActiveModule());
 				$scope.activeModule = activeModules;
 			}
-		},
-		templateUrl: Config.frontendPrefix+'template/module/moduleList.tpl'
+		}
 	};
 }
-moduleList.$inject = ['MyPlace.configService', 'MyPlace.Module.moduleManager'];
+moduleList.$inject = ['MyPlace.Utils.templateUrl', 'MyPlace.Module.moduleManager'];
 
 function moduleListCtrl () {
 }

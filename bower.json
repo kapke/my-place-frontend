@@ -18,6 +18,7 @@
     "angular-animate": "*",
     "jQuery": "*",
     "angular-ui-router": "*",
-    "angular-material": "~0.8.3"
+    "angular-material": "*",
+    "angular-material-internal": "angular/material"
   }
 }

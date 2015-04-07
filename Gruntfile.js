@@ -7,9 +7,9 @@ module.exports = function (grunt) {
             },
             dev: {
                 src: ['src/main.js',
-                      'src/*.js', 
-                      'src/translate/translate.js', 
-                      'src/utils/utils.js', 
+                      'src/utils/utils.js',
+                      'src/*.js',
+                      'src/translate/translate.js',
                       'src/utils/*.js', 
                       'src/crud/*.js', 
                       'src/translate/*.js', 
