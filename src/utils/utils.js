@@ -10,7 +10,7 @@
             return function promisifyReturn (fn) {
                 return function wrapper () {
                     var deferred = $q.defer();
-                    deferred.resolve(fn.call(null, arguments));
+                    deferred.resolve(fn.apply(null, arguments));
                     return deferred.promise;
                 };
             };
