@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.php",
   "dependencies": {
-    "material-typography": "git://github.com/kapke/material-typography"
+    "material-typography": "git://github.com/kapke/material-typography",
+    "angular-material-source": "git://github.com/angular/material"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
